@@ -2,6 +2,6 @@ import { CategoryType } from "src/enums/category-type"
 
 export interface Blog {
     id: number
-    name: string,
+    title: string,
     category: CategoryType | string
 }
