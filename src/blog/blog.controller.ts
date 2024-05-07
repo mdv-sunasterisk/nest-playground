@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, ValidationPipe } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { Blog } from './interfaces/blog.interface';
@@ -26,8 +26,8 @@ export class BlogController {
      * @returns {object}
      */     
     @Get(':id')
-    fetchBlog(@Param('id') id: string): {} {
-        return this.blogService.fetchBlog(+id);
+    fetchBlog(@Param('id', ParseIntPipe) id: number): {} {
+        return this.blogService.fetchBlog(id);
     }
 
     /**
@@ -37,7 +37,7 @@ export class BlogController {
      * @returns {Blog}
      */
     @Post()
-    createBlog(@Body() createBlogDto: CreateBlogDto ): Blog {
+    createBlog(@Body(new ValidationPipe()) createBlogDto: CreateBlogDto ): Blog {
         return this.blogService.createBlog(createBlogDto);
     }
     
@@ -49,8 +49,8 @@ export class BlogController {
      * @returns {Blog}
      */  
     @Patch(':id')
-    updateBlog(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto): Blog|{} {
-        return this.blogService.updateBlog(+id, updateBlogDto);
+    updateBlog(@Param('id', ParseIntPipe) id: number, @Body(new ValidationPipe()) updateBlogDto: UpdateBlogDto): Blog|{} {
+        return this.blogService.updateBlog(id, updateBlogDto);
     }  
     
     /**
@@ -60,7 +60,7 @@ export class BlogController {
      * @returns {Blog|{}}
      */  
     @Delete(':id')
-    deleteBlog(@Param('id') id: string): Blog|{} {
-        return this.blogService.deleteBlog(+id);
+    deleteBlog(@Param('id', ParseIntPipe) id: number): Blog|{} {
+        return this.blogService.deleteBlog(id);
     }
 }

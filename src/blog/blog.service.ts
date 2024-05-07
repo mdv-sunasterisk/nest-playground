@@ -8,9 +8,9 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 export class BlogService {
     
     private blogs: Blog[] =  [
-        { id: 1, name: 'My First Blog', category: CategoryType.FICTION },
-        { id: 2, name: 'My Second Blog', category: CategoryType.NONFICTION },
-        { id: 3, name: 'My Third Blog', category: CategoryType.LITERATURE },
+        { id: 1, title: 'My First Blog', category: CategoryType.FICTION },
+        { id: 2, title: 'My Second Blog', category: CategoryType.NONFICTION },
+        { id: 3, title: 'My Third Blog', category: CategoryType.LITERATURE },
     ];
 
     /**
@@ -63,7 +63,7 @@ export class BlogService {
     createBlog(createBlogDto: CreateBlogDto): Blog {
         const newBlog = {
             id: this.generateId(),
-            name: createBlogDto.name,
+            title: createBlogDto.title,
             category: createBlogDto.category,
         };
 
@@ -83,7 +83,7 @@ export class BlogService {
         const selectedBlog = this.blogs.find((blog) => blog.id == id);
 
         if(selectedBlog) {
-            selectedBlog.name = updateBlogDto.name;
+            selectedBlog.title = updateBlogDto.title;
             selectedBlog.category = updateBlogDto.category;
 
             return selectedBlog;
