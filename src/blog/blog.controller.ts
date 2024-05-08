@@ -12,33 +12,33 @@ export class BlogController {
      * Retrieves all of the blog records, with the option to filter by category.
      * 
      * @param {string} category
-     * @returns {array}
+     * @returns {Promise<Array<{}>>}
      */
     @Get()
-    fetchBlogs(@Query('category') category: string|null): Array<{}> {
-        return this.blogService.fetchBlogs(category);
+    async fetchBlogs(@Query('category') category: string|null): Promise<Array<{}>> {
+        return await this.blogService.fetchBlogs(category);
     }
 
     /**
      * Retrieves a single blog record.
      * 
      * @param {number} id
-     * @returns {object}
+     * @returns {Promise<Blog|null>}
      */     
     @Get(':id')
-    fetchBlog(@Param('id', ParseIntPipe) id: number): {} {
-        return this.blogService.fetchBlog(id);
+    async fetchBlog(@Param('id', ParseIntPipe) id: number): Promise<Blog|null> {
+        return await this.blogService.fetchBlog(id);
     }
 
     /**
      * Creates a new blog record.
      * 
      * @param {CreateBlogDto} createBlogDto
-     * @returns {Blog}
+     * @returns {Promise<Blog>}
      */
     @Post()
-    createBlog(@Body(new ValidationPipe()) createBlogDto: CreateBlogDto ): Blog {
-        return this.blogService.createBlog(createBlogDto);
+    async createBlog(@Body(new ValidationPipe()) createBlogDto: CreateBlogDto ): Promise<Blog> {
+        return await this.blogService.createBlog(createBlogDto);
     }
     
     /**
@@ -46,21 +46,21 @@ export class BlogController {
      * 
      * @param {number} id
      * @param {UpdateBlogDto} updateBlogDto
-     * @returns {Blog}
+     * @returns {Promise<Blog|null>}
      */  
     @Patch(':id')
-    updateBlog(@Param('id', ParseIntPipe) id: number, @Body(new ValidationPipe()) updateBlogDto: UpdateBlogDto): Blog|{} {
-        return this.blogService.updateBlog(id, updateBlogDto);
+    async updateBlog(@Param('id', ParseIntPipe) id: number, @Body(new ValidationPipe()) updateBlogDto: UpdateBlogDto): Promise<Blog|null> {
+        return await this.blogService.updateBlog(id, updateBlogDto);
     }  
     
     /**
      * Delete an existing blog record.
      * 
      * @param {number} id
-     * @returns {Blog|{}}
+     * @returns {Promise<Blog|null>}
      */  
     @Delete(':id')
-    deleteBlog(@Param('id', ParseIntPipe) id: number): Blog|{} {
-        return this.blogService.deleteBlog(id);
+    async deleteBlog(@Param('id', ParseIntPipe) id: number): Promise<Blog|null> {
+        return await this.blogService.deleteBlog(id);
     }
 }
