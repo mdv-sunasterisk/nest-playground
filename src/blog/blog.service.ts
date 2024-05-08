@@ -3,9 +3,12 @@ import { CategoryType } from '../enums/category-type';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { Blog } from './interfaces/blog.interface';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class BlogService {
+
+    constructor(private prisma: PrismaService) {}
     
     private blogs: Blog[] =  [
         { id: 1, title: 'My First Blog', category: CategoryType.FICTION },
@@ -17,57 +20,50 @@ export class BlogService {
      * Retrieves all of the blog records, with the option to filter by category.
      * 
      * @param {string|null} category
-     * @returns {array}
+     * @returns {Promise<Array<{}>>}
      */
-    fetchBlogs(category: string|null): Array<{}> {
-        if(!category) {
-            return this.blogs;
-        } else if(category != CategoryType.ALL) {
-            return this.blogs.filter((blog) => blog.category == category);
-        }
-
-        return this.blogs;
+    async fetchBlogs(category: string|null): Promise<Array<{}>> {
+        if(!category || category != CategoryType.ALL) {
+            return this.prisma.blog.findMany();
+        } 
+    
+        return this.prisma.blog.findMany({
+            where: {
+                category: category
+            }
+        });
     }
  
     /**
      * Retrieves a single blog record.
      * 
      * @param {number} id
-     * @returns {object}
+     * @returns {Promise<Blog|null>}
      */     
-    fetchBlog(id: number): {} {
-        return this.blogs.find((blog) => blog.id == id)
-    }
-    
-    /**
-     * Generate an incremented id value.
-     * 
-     * @returns number
-     */  
-    generateId() {
-        if(this.blogs.length > 0) {
-            const reversedArray = this.blogs.sort((a, b) => b.id - a.id);
+    async fetchBlog(id: number): Promise<Blog|null>  {
+        const blog = await this.prisma.blog.findFirst({
+            where: {
+                id: id    
+            }
+        })
 
-            return reversedArray[0].id + 1;
-        }
-
-        return 1;
+        return blog;
     }
     
     /**
      * Creates a new blog record.
      * 
      * @param {CreateBlogDto} createBlogDto
-     * @returns {Blog}
+     * @returns {Promise<Blog>}
      */     
-    createBlog(createBlogDto: CreateBlogDto): Blog {
-        const newBlog = {
-            id: this.generateId(),
-            title: createBlogDto.title,
-            category: createBlogDto.category,
-        };
-
-        this.blogs.push(newBlog);
+    async createBlog(createBlogDto: CreateBlogDto): Promise<Blog> {
+        const newBlog = this.prisma.blog.create({
+            data: {
+                title   : createBlogDto.title,
+                content : createBlogDto.content,
+                category: createBlogDto.category,
+            }
+        })
 
         return newBlog;
     }
@@ -77,35 +73,44 @@ export class BlogService {
      * 
      * @param {number} id
      * @param {UpdateBlogDto} updateBlogDto
-     * @returns {Blog}
+     * @returns {Promise<Blog|null>}
      */  
-    updateBlog(id: number, updateBlogDto: UpdateBlogDto): Blog|{} {
-        const selectedBlog = this.blogs.find((blog) => blog.id == id);
+    async updateBlog(id: number, updateBlogDto: UpdateBlogDto): Promise<Blog|null> {
+        const selectedBlog = await this.fetchBlog(id);
 
         if(selectedBlog) {
-            selectedBlog.title = updateBlogDto.title;
-            selectedBlog.category = updateBlogDto.category;
-
-            return selectedBlog;
+            return this.prisma.blog.update({
+                where: {
+                    id: selectedBlog.id
+                },
+                data: {
+                    title: updateBlogDto.title,
+                    content: updateBlogDto.content,
+                    category: updateBlogDto.category,
+                }
+            })
         }
 
-        return {};
+        return selectedBlog;
     }
      
     /**
      * Delete an existing blog record.
      * 
      * @param {number} id
-     * @returns {Blog|{}}
+     * @returns {Promise<Blog|null>}
      */  
-    deleteBlog(id: number): Blog|{} {
-        const selectedBlog = this.blogs.find((blog) => blog.id == id);
-        const selectedIndex = this.blogs.findIndex((blog) => blog.id == id);
+    async deleteBlog(id: number): Promise<Blog|null> {
+        const selectedBlog = await this.fetchBlog(id);
 
         if(selectedBlog) {
-            this.blogs.splice(selectedIndex, 1);
+            return this.prisma.blog.delete({
+                where: {
+                    id: selectedBlog.id
+                }
+            })
         }
         
-        return selectedBlog ?? {};
+        return selectedBlog;
     }
 }
