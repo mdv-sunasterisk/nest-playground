@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-import { BlogController } from './blog.controller';
-import { BlogService } from './blog.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PasswordService } from 'src/password/password.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    // Needs to be set dynamically somehow.
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -19,7 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  controllers: [BlogController],
-  providers: [BlogService, PrismaService]
+  controllers: [AuthController],
+  providers: [AuthService, PrismaService, PasswordService, ConfigService]
 })
-export class BlogModule {}
+export class AuthModule {}
