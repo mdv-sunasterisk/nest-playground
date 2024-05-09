@@ -4,17 +4,12 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { Blog } from './interfaces/blog.interface';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class BlogService {
 
     constructor(private prisma: PrismaService) {}
-    
-    private blogs: Blog[] =  [
-        { id: 1, title: 'My First Blog', category: CategoryType.FICTION },
-        { id: 2, title: 'My Second Blog', category: CategoryType.NONFICTION },
-        { id: 3, title: 'My Third Blog', category: CategoryType.LITERATURE },
-    ];
 
     /**
      * Retrieves all of the blog records, with the option to filter by category.
