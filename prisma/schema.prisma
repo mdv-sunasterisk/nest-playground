@@ -6,6 +6,8 @@
 
 generator prismaClassGenerator {
   provider = "prisma-class-generator"
+  output   = "../src/_gen/prisma-class"
+  dryRun   = false
 }
 
 generator client {
