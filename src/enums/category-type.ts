@@ -1,6 +1,6 @@
 export enum CategoryType {
     ALL = 'All',
     FICTION = 'Fiction',
-    NONFICTION = 'Non-Fiction',
+    NONFICTION = 'NonFiction',
     LITERATURE = 'Literature',
 }

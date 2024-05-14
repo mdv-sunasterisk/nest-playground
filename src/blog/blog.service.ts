@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CategoryType } from '../enums/category-type';
 import { CreateBlogDto } from './dto/create-blog.dto';
-import { Blog } from './interfaces/blog.interface';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
+import { Blog } from '@prisma/client';
 
 @Injectable()
 export class BlogService {
@@ -17,7 +16,7 @@ export class BlogService {
      * @param {string|null} category
      * @returns {Promise<Array<{}>>}
      */
-    async fetchBlogs(category: string|null): Promise<Array<{}>> {
+    async fetchBlogs(category?: string|null): Promise<Array<{}>> {
         if(!category || category != CategoryType.ALL) {
             return this.prisma.blog.findMany();
         } 
@@ -49,7 +48,7 @@ export class BlogService {
      * Creates a new blog record.
      * 
      * @param {CreateBlogDto} createBlogDto
-     * @returns {Promise<Blog>}
+     * @returns {Promise<B>}
      */     
     async createBlog(createBlogDto: CreateBlogDto): Promise<Blog> {
         const newBlog = this.prisma.blog.create({
