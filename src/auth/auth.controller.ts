@@ -1,9 +1,11 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
 
@@ -29,7 +31,7 @@ export class AuthController {
     * @throws {NotFoundException} - If the user is not found or the credentials are incorrect.
     */
     @Post('login')
-    async login(@Body() loginDto: LoginDto): Promise<{ user: User, access_token: string }> {
+    async login(@Body(new ValidationPipe()) loginDto: LoginDto): Promise<{ user: User, access_token: string }> {
         return this.authService.login(loginDto);
     }
 }
