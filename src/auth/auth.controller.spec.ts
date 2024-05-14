@@ -59,20 +59,20 @@ describe('AuthController', () => {
 
   it('should return a user object', async () => {
     const registerDto: RegisterDto = {
-      firstName: "Lebronny",
-      lastName: "James",
-      email: "lebron1@gmail.com",
-      mobileNumber: "09172835293",
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@gmail.com",
+      mobileNumber: "09172838283",
       password: "password",
       passwordConfirmation: "password",
     }
     
     const validRegisterResponse = {
-      id: 5,
-      firstName: "Lebronny",
-      lastName: "James",
-      email: "lebron1@gmail.com",
-      mobileNumber: "09172835293",
+      id: 1,
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@gmail.com",
+      mobileNumber: "09172838283",
       password: "$2b$10$gHEKG7y1.6blSOsJmNTNiOwi8Mi5DNi1w/oWPFZO0tdFYa9XqNfC2",
       createdAt: "2024-05-14T09:05:28.989Z",
       updatedAt: "2024-05-14T09:05:28.989Z"
