@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -75,10 +75,10 @@ export class AuthService {
                     access_token: jwtToken 
                 };
             } else {
-                throw new NotFoundException('Incorrect credentials.');
+                throw new UnauthorizedException('Incorrect credentials.');
             }
         }
         
-        throw new NotFoundException('Incorrect credentials.');
+        throw new UnauthorizedException('Incorrect credentials.');
     }
 }
