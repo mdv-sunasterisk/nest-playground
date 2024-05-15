@@ -54,6 +54,8 @@ describe('AuthController', () => {
 
     const loginResponse = await controller.login(loginDto);
 
+    expect(mockAuthService.login).toHaveBeenCalledTimes(1)
+    expect(mockAuthService.login).toHaveBeenCalledWith(loginDto);
     expect(loginResponse).toEqual(validLoginMockResponse);
   })
 
@@ -82,6 +84,8 @@ describe('AuthController', () => {
 
     const registerResponse = await controller.register(registerDto);
 
+    expect(mockAuthService.register).toHaveBeenCalledTimes(1)
+    expect(mockAuthService.register).toHaveBeenCalledWith(registerDto);
     expect(registerResponse).toEqual(validRegisterResponse);
   });
 });

@@ -9,6 +9,7 @@ export class PasswordService {
         
         return bcrypt.genSalt(saltRounds);
     }
+
     async hashPassword(password: string) {
         const salt = await this.generateSalt();
     

@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString } from 'class-validator';
 import { Comments } from './comments';
 import { User } from './user';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -7,12 +8,18 @@ export class Blog {
   id: number;
 
   @ApiProperty({ type: String })
+  @IsNotEmpty()
+  @IsString()
   title: string;
 
   @ApiPropertyOptional({ type: String })
+  @IsNotEmpty()
+  @IsString()
   content?: string;
 
   @ApiProperty({ type: String })
+  @IsNotEmpty()
+  @IsString()
   category: string;
 
   @ApiProperty({ type: Date })

@@ -62,6 +62,7 @@ describe('BlogController', () => {
     
     const fetchBlogsResponse = await controller.fetchBlogs();
 
+    expect(mockBlogService.fetchBlogs).toHaveBeenCalledTimes(1)
     expect(fetchBlogsResponse).toEqual(validFetchBlogsResponse);
   });
 
@@ -81,6 +82,8 @@ describe('BlogController', () => {
     
     const fetchBlogResponse = await controller.fetchBlog(blogId);
 
+    expect(mockBlogService.fetchBlog).toHaveBeenCalledTimes(1)
+    expect(mockBlogService.fetchBlog).toHaveBeenCalledWith(blogId);
     expect(fetchBlogResponse).toEqual(validFetchBlogResponse);
   });
 
@@ -104,13 +107,15 @@ describe('BlogController', () => {
     
     const createBlogResponse = await controller.createBlog(createBlogDto);
 
+    expect(mockBlogService.createBlog).toHaveBeenCalledTimes(1)
+    expect(mockBlogService.createBlog).toHaveBeenCalledWith(createBlogDto);
     expect(createBlogResponse).toEqual(validCreateBlogResponse);
   });
 
   it('updateBlog > should return an updated blog object', async () => {
     const blogId = 1;
   
-    const UpdateBlogDto: UpdateBlogDto = {
+    const updateBlogDto: UpdateBlogDto = {
       title: "My First Blog",
       content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel.",
       category: "Literature",
@@ -127,8 +132,10 @@ describe('BlogController', () => {
 
     jest.spyOn(mockBlogService, 'updateBlog').mockReturnValue(validUpdateBlogResponse);
     
-    const updateBlogResponse = await controller.updateBlog(blogId, UpdateBlogDto);
+    const updateBlogResponse = await controller.updateBlog(blogId, updateBlogDto);
 
+    expect(mockBlogService.updateBlog).toHaveBeenCalledTimes(1)
+    expect(mockBlogService.updateBlog).toHaveBeenCalledWith(blogId, updateBlogDto);
     expect(updateBlogResponse).toEqual(validUpdateBlogResponse);
   });
 
@@ -148,6 +155,8 @@ describe('BlogController', () => {
     
     const deleteBlogResponse = await controller.deleteBlog(blogId);
 
+    expect(mockBlogService.deleteBlog).toHaveBeenCalledTimes(1)
+    expect(mockBlogService.deleteBlog).toHaveBeenCalledWith(blogId);
     expect(deleteBlogResponse).toEqual(validDeleteBlogResponse);
   });
 });
