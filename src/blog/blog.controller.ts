@@ -18,7 +18,6 @@ export class BlogController {
      * @param {string|null} category
      * @returns {Promise<Array<{}>>}
      */
-    @UseGuards(AuthGuard)
     @Get()
     async fetchBlogs(@Query('category') category?: string|null): Promise<Array<{}>> {
         return await this.blogService.fetchBlogs(category);
@@ -30,7 +29,6 @@ export class BlogController {
      * @param {number} id
      * @returns {Promise<Blog|null>}
      */     
-    @UseGuards(AuthGuard)
     @Get(':id')
     async fetchBlog(@Param('id', ParseIntPipe) id: number): Promise<Blog|null> {
         return await this.blogService.fetchBlog(id);
