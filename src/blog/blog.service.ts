@@ -59,7 +59,7 @@ export class BlogService {
         };
 
         if(imagePath) {
-            vars = Object.assign(vars, { imagePath: imagePath });
+            vars = Object.assign(vars, { imagePath });
         }
 
         const newBlog = this.prisma.blog.create({ data: vars });
@@ -72,21 +72,26 @@ export class BlogService {
      * 
      * @param {number} id
      * @param {UpdateBlogDto} updateBlogDto
+     * @param {string|undefined} imagePath
      * @returns {Promise<Blog|null>}
      */  
-    async updateBlog(id: number, updateBlogDto: UpdateBlogDto): Promise<Blog|null> {
+    async updateBlog(id: number, updateBlogDto: UpdateBlogDto, imagePath: string|undefined): Promise<Blog|null> {
         const selectedBlog = await this.fetchBlog(id);
 
         if(selectedBlog) {
+            let vars = {
+                title: updateBlogDto.title,
+                content: updateBlogDto.content,
+                category: updateBlogDto.category,
+            };
+
+            if(imagePath) {
+                vars = Object.assign(vars, { imagePath });
+            }
+
             return this.prisma.blog.update({
-                where: {
-                    id: selectedBlog.id
-                },
-                data: {
-                    title: updateBlogDto.title,
-                    content: updateBlogDto.content,
-                    category: updateBlogDto.category,
-                }
+                where: { id: selectedBlog.id },
+                data: vars
             })
         }
 

@@ -56,12 +56,14 @@ export class BlogController {
      * 
      * @param {number} id
      * @param {UpdateBlogDto} updateBlogDto
+     * @param {Express.Multer.File} image
      * @returns {Promise<Blog|null>}
      */
     @UseGuards(AuthGuard)
     @Patch(':id')
-    async updateBlog(@Param('id', ParseIntPipe) id: number, @Body(new ValidationPipe()) updateBlogDto: UpdateBlogDto): Promise<Blog|null> {
-        return await this.blogService.updateBlog(id, updateBlogDto);
+    @UseInterceptors(FileInterceptor('image'))
+    async updateBlog(@Param('id', ParseIntPipe) id: number, @Body(new ValidationPipe()) updateBlogDto: UpdateBlogDto, @UploadedFile() image: Express.Multer.File): Promise<Blog|null> {
+        return await this.blogService.updateBlog(id, updateBlogDto, image?.path);
     }  
     
     /**
