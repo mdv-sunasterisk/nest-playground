@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { Blog } from '@prisma/client';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Blogs')
 @ApiBearerAuth('access-token')
@@ -38,14 +39,16 @@ export class BlogController {
      * Creates a new blog record.
      * 
      * @param {CreateBlogDto} createBlogDto
+     * @param {Express.Multer.File|undefined} image
      * @returns {Promise<Blog>}
      */
     @ApiCreatedResponse({ description: 'The record has been successfully created.' })
     @ApiForbiddenResponse({ description: 'Forbidden resource.' })
     @UseGuards(AuthGuard)
     @Post()
-    async createBlog(@Body(new ValidationPipe()) createBlogDto: CreateBlogDto ): Promise<Blog> {
-        return await this.blogService.createBlog(createBlogDto);
+    @UseInterceptors(FileInterceptor('image'))
+    async createBlog(@Body(new ValidationPipe()) createBlogDto: CreateBlogDto, @UploadedFile() image: Express.Multer.File|undefined): Promise<Blog> {
+        return await this.blogService.createBlog(createBlogDto, image?.path);
     }
     
     /**

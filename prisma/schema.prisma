@@ -29,6 +29,7 @@ model Blog {
   comments  Comments[]
   User      User?      @relation(fields: [userId], references: [id])
   userId    Int?
+  imagePath String?
 }
 
 model Comments {

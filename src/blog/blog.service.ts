@@ -48,16 +48,21 @@ export class BlogService {
      * Creates a new blog record.
      * 
      * @param {CreateBlogDto} createBlogDto
-     * @returns {Promise<B>}
+     * @param {string|undefined} imagePath
+     * @returns {Promise<Blog>}
      */     
-    async createBlog(createBlogDto: CreateBlogDto): Promise<Blog> {
-        const newBlog = this.prisma.blog.create({
-            data: {
-                title   : createBlogDto.title,
-                content : createBlogDto.content,
-                category: createBlogDto.category,
-            }
-        })
+    async createBlog(createBlogDto: CreateBlogDto, imagePath: string|undefined): Promise<Blog> {
+        let vars = {
+            title   : createBlogDto.title,
+            content : createBlogDto.content,
+            category: createBlogDto.category,
+        };
+
+        if(imagePath) {
+            vars = Object.assign(vars, { imagePath: imagePath });
+        }
+
+        const newBlog = this.prisma.blog.create({ data: vars });
 
         return newBlog;
     }

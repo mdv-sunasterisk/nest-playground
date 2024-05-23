@@ -29,4 +29,7 @@ export class Blog {
 
   @ApiPropertyOptional({ type: Number })
   userId?: number;
+
+  @ApiPropertyOptional({ type: String })
+  imagePath?: string;
 }
