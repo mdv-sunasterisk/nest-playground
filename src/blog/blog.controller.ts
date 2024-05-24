@@ -19,11 +19,11 @@ export class BlogController {
      * 
      * @param {string|null} category
      * @param {PaginationDto} paginationDto
-     * @returns {Promise<Array<{}>>}
+     * @returns {Promise<{}>}
      */
     @Get()
     @UsePipes(new ValidationPipe({ transform: true }))
-    async fetchBlogs(@Query('category') category?: string|null, @Query() paginationDto?: PaginationDto): Promise<Array<{}>> {
+    async fetchBlogs(@Query('category') category?: string|null, @Query() paginationDto?: PaginationDto): Promise<{}> {
         return await this.blogService.fetchBlogs(category, paginationDto);
     }
 

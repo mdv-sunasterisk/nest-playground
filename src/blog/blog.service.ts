@@ -16,26 +16,28 @@ export class BlogService {
      * 
      * @param {string|null} category
      * @param {PaginationDto} paginationDto
-     * @returns {Promise<Array<{}>>}
+     * @returns {Promise<{}>}
      */
-    async fetchBlogs(category?: string|null, paginationDto?: PaginationDto): Promise<Array<{}>> {
+    async fetchBlogs(category?: string|null, paginationDto?: PaginationDto): Promise<{}> {
         const { page = 1, limit = 10 } = paginationDto;
         const skip = (page - 1) * limit;
         const take = limit;
 
-        console.log(typeof page, page); // Should output 'number' and the value
-    console.log(typeof limit, limit);
-
         const queryOptions = { skip, take };
 
+        const returnObject = { 
+            page,
+            limit,
+            totalBlogCount: await this.prisma.blog.count() 
+        };
+
         if(!category || category == CategoryType.ALL) {
-            return this.prisma.blog.findMany(queryOptions);
+            return Object.assign(returnObject, { blogs: await this.prisma.blog.findMany(queryOptions) });
         } 
-        console.log('sample')
 
         const newQueryOptions = Object.assign(queryOptions, { where: { category } });
-    
-        return this.prisma.blog.findMany(newQueryOptions);
+
+        return Object.assign(returnObject, { blogs: await this.prisma.blog.findMany(newQueryOptions) });
     }
  
     /**
