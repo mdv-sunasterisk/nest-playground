@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
@@ -6,6 +6,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { Blog } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { PaginationDto } from './dto/pagination.dto';
 
 @ApiTags('Blogs')
 @ApiBearerAuth('access-token')
@@ -17,11 +18,13 @@ export class BlogController {
      * Retrieves all of the blog records, with the option to filter by category.
      * 
      * @param {string|null} category
+     * @param {PaginationDto} paginationDto
      * @returns {Promise<Array<{}>>}
      */
     @Get()
-    async fetchBlogs(@Query('category') category?: string|null): Promise<Array<{}>> {
-        return await this.blogService.fetchBlogs(category);
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async fetchBlogs(@Query('category') category?: string|null, @Query() paginationDto?: PaginationDto): Promise<Array<{}>> {
+        return await this.blogService.fetchBlogs(category, paginationDto);
     }
 
     /**
