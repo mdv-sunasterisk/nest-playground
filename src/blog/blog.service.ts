@@ -48,16 +48,21 @@ export class BlogService {
      * Creates a new blog record.
      * 
      * @param {CreateBlogDto} createBlogDto
-     * @returns {Promise<B>}
+     * @param {string|undefined} imagePath
+     * @returns {Promise<Blog>}
      */     
-    async createBlog(createBlogDto: CreateBlogDto): Promise<Blog> {
-        const newBlog = this.prisma.blog.create({
-            data: {
-                title   : createBlogDto.title,
-                content : createBlogDto.content,
-                category: createBlogDto.category,
-            }
-        })
+    async createBlog(createBlogDto: CreateBlogDto, imagePath: string|undefined): Promise<Blog> {
+        let vars = {
+            title   : createBlogDto.title,
+            content : createBlogDto.content,
+            category: createBlogDto.category,
+        };
+
+        if(imagePath) {
+            vars = Object.assign(vars, { imagePath });
+        }
+
+        const newBlog = this.prisma.blog.create({ data: vars });
 
         return newBlog;
     }
@@ -67,21 +72,26 @@ export class BlogService {
      * 
      * @param {number} id
      * @param {UpdateBlogDto} updateBlogDto
+     * @param {string|undefined} imagePath
      * @returns {Promise<Blog|null>}
      */  
-    async updateBlog(id: number, updateBlogDto: UpdateBlogDto): Promise<Blog|null> {
+    async updateBlog(id: number, updateBlogDto: UpdateBlogDto, imagePath: string|undefined): Promise<Blog|null> {
         const selectedBlog = await this.fetchBlog(id);
 
         if(selectedBlog) {
+            let vars = {
+                title: updateBlogDto.title,
+                content: updateBlogDto.content,
+                category: updateBlogDto.category,
+            };
+
+            if(imagePath) {
+                vars = Object.assign(vars, { imagePath });
+            }
+
             return this.prisma.blog.update({
-                where: {
-                    id: selectedBlog.id
-                },
-                data: {
-                    title: updateBlogDto.title,
-                    content: updateBlogDto.content,
-                    category: updateBlogDto.category,
-                }
+                where: { id: selectedBlog.id },
+                data: vars
             })
         }
 
