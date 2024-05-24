@@ -4,6 +4,7 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Blog } from '@prisma/client';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Injectable()
 export class BlogService {
@@ -14,18 +15,27 @@ export class BlogService {
      * Retrieves all of the blog records, with the option to filter by category.
      * 
      * @param {string|null} category
+     * @param {PaginationDto} paginationDto
      * @returns {Promise<Array<{}>>}
      */
-    async fetchBlogs(category?: string|null): Promise<Array<{}>> {
-        if(!category || category != CategoryType.ALL) {
-            return this.prisma.blog.findMany();
+    async fetchBlogs(category?: string|null, paginationDto?: PaginationDto): Promise<Array<{}>> {
+        const { page = 1, limit = 10 } = paginationDto;
+        const skip = (page - 1) * limit;
+        const take = limit;
+
+        console.log(typeof page, page); // Should output 'number' and the value
+    console.log(typeof limit, limit);
+
+        const queryOptions = { skip, take };
+
+        if(!category || category == CategoryType.ALL) {
+            return this.prisma.blog.findMany(queryOptions);
         } 
+        console.log('sample')
+
+        const newQueryOptions = Object.assign(queryOptions, { where: { category } });
     
-        return this.prisma.blog.findMany({
-            where: {
-                category: category
-            }
-        });
+        return this.prisma.blog.findMany(newQueryOptions);
     }
  
     /**
