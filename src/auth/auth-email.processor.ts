@@ -13,8 +13,6 @@ export class AuthEmailConsumer {
         job.progress(10);
         const { email, token } = job.data;
 
-        this.logger.log(email)
-        this.logger.log('sample')
         job.progress(100);
     }
 
@@ -26,18 +24,15 @@ export class AuthEmailConsumer {
     @OnQueueProgress()
     onProgress(job: Job, progress: number) {
         this.logger.log(`Progress job ${job.id} of type ${job.name} with data ${job.data}...`);
-        this.logger.log(progress);
     }
 
     @OnQueueCompleted()
     onCompleted(job: Job, result: any) {
         this.logger.log(`Completed job ${job.id} of type ${job.name} with data ${job.data}...`);
-        this.logger.log(result);
     }
 
     @OnQueueFailed()
     onFailed(job: Job, error: Error) {
         this.logger.log(`Failed job ${job.id} of type ${job.name} with data ${job.data}...`);
-        this.logger.log(error);
     }
 }
