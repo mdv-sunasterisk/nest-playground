@@ -1,4 +1,4 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, ValidationPipe } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
@@ -22,7 +22,6 @@ export class AuthController {
         return this.authService.register(registerDto);
     }
 
-    
     /**
      * Authenticates a user with the provided login credentials.
     *
@@ -33,5 +32,10 @@ export class AuthController {
     @Post('login')
     async login(@Body(new ValidationPipe()) loginDto: LoginDto): Promise<{ user: User, access_token: string }> {
         return this.authService.login(loginDto);
+    }
+
+    @Get('verify-email')
+    async verifyEmail(@Query('token') token: string) {
+        return this.authService.verifyEmail(token);
     }
 }

@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { AuthEmailConsumer } from './auth-email.processor';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -32,9 +33,10 @@ import { AuthEmailConsumer } from './auth-email.processor';
         }
       }),
       inject: [ConfigService]
-    })
+    }),
+    MailModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, PrismaService, PasswordService, ConfigService, AuthEmailConsumer]
+  providers: [AuthService, PrismaService, PasswordService, AuthEmailConsumer]
 })
 export class AuthModule {}

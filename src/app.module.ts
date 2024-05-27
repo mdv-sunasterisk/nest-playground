@@ -10,6 +10,11 @@ import jwtConfig from 'config/jwt.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { BullModule } from '@nestjs/bull';
+import { MailService } from './mail/mail.service';
+import { MailModule } from './mail/mail.module';
+import redisConfig from 'config/redis.config';
+import mailConfig from 'config/mail.config';
+import generalConfig from 'config/general.config';
 
 @Module({
   imports: [
@@ -17,7 +22,7 @@ import { BullModule } from '@nestjs/bull';
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [jwtConfig]
+      load: [jwtConfig, redisConfig, mailConfig, generalConfig]
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '../public/images'),
@@ -33,10 +38,11 @@ import { BullModule } from '@nestjs/bull';
         }
       }),
       inject: [ConfigService]
-    })
+    }),
+    MailModule
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, PasswordService, ConfigService],
+  providers: [AppService, PrismaService, PasswordService, ConfigService, MailService],
 })
 
 export class AppModule {}
