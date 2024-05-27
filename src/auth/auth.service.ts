@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -42,7 +42,9 @@ export class AuthService {
         });
 
         if(createdUser) {
-            await this.sendVerificationEmail(createdUser.email, 'temporary-token');
+            const token = await this.jwt.signAsync({ email: createdUser.email });
+    
+            await this.sendVerificationEmail(createdUser.email, token);
         }
 
         return createdUser;
@@ -55,11 +57,7 @@ export class AuthService {
      * @returns {Promise<User|null>} The user found with the provided email, or null if not found.
      */
     async findUser(email: string): Promise<User|null> {
-        return this.prisma.user.findFirst({
-            where: {
-                email: email
-            }
-        });
+        return this.prisma.user.findUnique({ where: { email } });
     }
     
     /**
@@ -93,5 +91,37 @@ export class AuthService {
         }
         
         throw new UnauthorizedException('Incorrect credentials.');
+    }
+
+    /**
+     * Verifies email based on the provided token from the link.
+     *
+     * @param {string} token - The login credentials of the user.
+     * @return {Promise<void>} - The authenticated user and access token.
+     * @throws {BadRequestException} - If the user is not found or the token is invalid.
+     */
+    async verifyEmail(token: string): Promise<void> {
+        try {
+            const payload = await this.jwt.verifyAsync(token);
+            const email = payload.email;
+
+            const user = await this.prisma.user.findUnique({ where: { email } });
+
+            if(!user) {
+                throw new BadRequestException('User does not exist.');
+            }
+
+            if(user.emailVerifiedAt) {
+                throw new BadRequestException('Email is already verified.');
+            }
+            
+            await this.prisma.user.update({ 
+                where: { email },
+                data: { emailVerifiedAt: new Date().toISOString() }
+            });
+            
+        } catch (error) {
+            throw new BadRequestException(error?.message ?? 'Invalid token.');
+        }
     }
 }

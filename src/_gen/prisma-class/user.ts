@@ -1,6 +1,6 @@
 import { Comments } from './comments';
 import { Blog } from './blog';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class User {
   @ApiProperty({ type: Number })
@@ -20,6 +20,9 @@ export class User {
 
   @ApiProperty({ type: String })
   password: string;
+
+  @ApiPropertyOptional({ type: Date })
+  emailVerifiedAt?: Date;
 
   @ApiProperty({ type: Date })
   createdAt: Date;
