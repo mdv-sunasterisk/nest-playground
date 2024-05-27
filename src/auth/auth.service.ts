@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,13 +23,24 @@ export class AuthService {
         await this.authEmailQueue.add('sendEmail', { email, token });
     }
 
+    async formatUserResponse(user: User) {
+        return { 
+            id          : user.id,
+            firstName   : user.firstName,
+            lastName    : user.lastName,
+            email       : user.email,
+            mobileNumber: user.mobileNumber,
+            createdAt   : user.createdAt
+        };
+    }
+
     /**
      * User registration.
      * 
      * @param {RegisterDto} registerDto - The data for user registration.
-     * @returns {Promise<User>} The newly created user.
+     * @returns {Promise<UserResponseDto>} The newly created user.
      */
-    async register(registerDto: RegisterDto): Promise<User> {
+    async register(registerDto: RegisterDto): Promise<UserResponseDto> {
         const hashedPassword = await this.password.hashPassword(registerDto.password);
 
         const createdUser = await this.prisma.user.create({
@@ -47,7 +59,7 @@ export class AuthService {
             await this.sendVerificationEmail(createdUser.email, token);
         }
 
-        return createdUser;
+        return await this.formatUserResponse(createdUser);
     }
     
     /**
@@ -67,7 +79,7 @@ export class AuthService {
      * @return {Promise<{ user: User, access_token: string }>} - The authenticated user and access token.
      * @throws {NotFoundException} - If the user is not found or the credentials are incorrect.
      */
-    async login(loginDto: LoginDto): Promise<{ user: User, access_token: string }> {
+    async login(loginDto: LoginDto): Promise<{ user: UserResponseDto, access_token: string }> {
         const user = await this.findUser(loginDto.email);
 
         if(user) {
@@ -81,8 +93,10 @@ export class AuthService {
 
                 const jwtToken = await this.jwt.signAsync(payload);
 
+                const userResponse = await this.formatUserResponse(user);
+
                 return { 
-                    user: user,
+                    user:  userResponse,
                     access_token: jwtToken 
                 };
             } else {
