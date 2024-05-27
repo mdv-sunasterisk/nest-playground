@@ -5,15 +5,22 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { PasswordService } from 'src/password/password.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class AuthService {
 
     constructor(
-        private prisma: PrismaService, 
-        private password: PasswordService, 
-        private jwt: JwtService
+        private readonly prisma: PrismaService, 
+        private readonly password: PasswordService, 
+        private readonly jwt: JwtService,
+        @InjectQueue('authEmail') private readonly authEmailQueue: Queue
     ) {}
+
+    async sendVerificationEmail(email: string, token: string) {
+        await this.authEmailQueue.add('sendEmail', { email, token });
+    }
 
     /**
      * User registration.
@@ -24,7 +31,7 @@ export class AuthService {
     async register(registerDto: RegisterDto): Promise<User> {
         const hashedPassword = await this.password.hashPassword(registerDto.password);
 
-        return this.prisma.user.create({
+        const createdUser = await this.prisma.user.create({
             data: {
                 firstName: registerDto.firstName,
                 lastName: registerDto.lastName,
@@ -33,6 +40,12 @@ export class AuthService {
                 password: hashedPassword 
             }
         });
+
+        if(createdUser) {
+            await this.sendVerificationEmail(createdUser.email, 'temporary-token');
+        }
+
+        return createdUser;
     }
     
     /**
