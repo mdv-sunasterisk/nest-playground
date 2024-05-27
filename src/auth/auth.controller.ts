@@ -4,6 +4,7 @@ import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -15,10 +16,10 @@ export class AuthController {
      * Registers a new user.
     *
     * @param {RegisterDto} registerDto - The data for user registration.
-    * @returns {Promise<User>} The newly created user.
+    * @returns {Promise<UserResponseDto>} The newly created user.
     */
     @Post('register')
-    async register(@Body() registerDto: RegisterDto): Promise<User> {
+    async register(@Body() registerDto: RegisterDto): Promise<UserResponseDto> {
         return this.authService.register(registerDto);
     }
 
@@ -30,12 +31,19 @@ export class AuthController {
     * @throws {NotFoundException} - If the user is not found or the credentials are incorrect.
     */
     @Post('login')
-    async login(@Body(new ValidationPipe()) loginDto: LoginDto): Promise<{ user: User, access_token: string }> {
+    async login(@Body(new ValidationPipe()) loginDto: LoginDto): Promise<{ user: UserResponseDto, access_token: string }> {
         return this.authService.login(loginDto);
     }
 
+    /**
+     * Verifies email based on the provided token from the link.
+     *
+     * @param {string} token - The login credentials of the user.
+     * @return {Promise<void>} - The authenticated user and access token.
+     * @throws {BadRequestException} - If the user is not found or the token is invalid.
+     */
     @Get('verify-email')
-    async verifyEmail(@Query('token') token: string) {
+    async verifyEmail(@Query('token') token: string): Promise<void> {
         return this.authService.verifyEmail(token);
     }
 }
