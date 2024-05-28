@@ -1,5 +1,6 @@
 import { Comments } from './comments';
 import { Blog } from './blog';
+import { Role } from './role';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class User {
@@ -35,4 +36,10 @@ export class User {
 
   @ApiProperty({ isArray: true, type: () => Blog })
   blogs: Blog[];
+
+  @ApiPropertyOptional({ type: Number })
+  roleId?: number;
+
+  @ApiPropertyOptional({ type: () => Role })
+  role?: Role;
 }
