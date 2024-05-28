@@ -59,7 +59,9 @@ export class AuthService {
             await this.sendVerificationEmail(createdUser.email, token);
         }
 
-        return await this.formatUserResponse(createdUser);
+        const userResponse = new UserResponseDto(createdUser);
+
+        return userResponse;
     }
     
     /**
@@ -93,7 +95,9 @@ export class AuthService {
 
                 const jwtToken = await this.jwt.signAsync(payload);
 
-                const userResponse = await this.formatUserResponse(user);
+                const userResponse = new UserResponseDto(user);
+
+                console.log(userResponse)
 
                 return { 
                     user:  userResponse,

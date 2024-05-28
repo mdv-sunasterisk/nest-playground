@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Post, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
@@ -18,6 +18,7 @@ export class AuthController {
     * @param {RegisterDto} registerDto - The data for user registration.
     * @returns {Promise<UserResponseDto>} The newly created user.
     */
+    @UseInterceptors(ClassSerializerInterceptor)
     @Post('register')
     async register(@Body() registerDto: RegisterDto): Promise<UserResponseDto> {
         return this.authService.register(registerDto);
@@ -30,6 +31,7 @@ export class AuthController {
     * @return {Promise<{ user: User, access_token: string }>} - The authenticated user and access token.
     * @throws {NotFoundException} - If the user is not found or the credentials are incorrect.
     */
+    @UseInterceptors(ClassSerializerInterceptor)
     @Post('login')
     async login(@Body(new ValidationPipe()) loginDto: LoginDto): Promise<{ user: UserResponseDto, access_token: string }> {
         return this.authService.login(loginDto);
