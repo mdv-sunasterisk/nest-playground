@@ -32,7 +32,7 @@ export class UserResponseDto {
     get fullName(): string {
         return `${this.firstName} ${this.lastName}`;
     }
-    
+
     constructor(user: Partial<UserResponseDto>) {
         Object.assign(this, user);
     }

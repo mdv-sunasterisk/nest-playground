@@ -97,8 +97,6 @@ export class AuthService {
 
                 const userResponse = new UserResponseDto(user);
 
-                console.log(userResponse)
-
                 return { 
                     user:  userResponse,
                     access_token: jwtToken 

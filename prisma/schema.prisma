@@ -57,3 +57,24 @@ model User {
   comments        Comments[]
   blogs           Blog[]
 }
+
+model Role {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  RolesOnPermissions RolesOnPermissions[]
+}
+
+model Permissions {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  RolesOnPermissions RolesOnPermissions[]
+}
+
+model RolesOnPermissions {
+  roleId        Int
+  role          Role        @relation(fields: [roleId], references: [id])
+  permissionsId Int
+  permissions   Permissions @relation(fields: [permissionsId], references: [id])
+
+  @@id([roleId, permissionsId])
+}
