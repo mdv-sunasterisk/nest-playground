@@ -11,7 +11,7 @@ const hashPassword = async (password: string) => {
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     return hashedPassword;
-  };
+};
 
 const getRoles = async () => {
     return [

@@ -4,10 +4,27 @@ import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PasswordService } from 'src/password/password.service';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { UserResponseDto } from './dto/user-response.dto';
+
+type Role = {
+    id: number;
+    name: string;
+};
+
+type User = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    mobileNumber: string;
+    password: string;
+    emailVerifiedAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    role: Role;
+};
 
 @Injectable()
 export class AuthService {
@@ -21,17 +38,6 @@ export class AuthService {
 
     async sendVerificationEmail(email: string, token: string) {
         await this.authEmailQueue.add('sendEmail', { email, token });
-    }
-
-    async formatUserResponse(user: User) {
-        return { 
-            id          : user.id,
-            firstName   : user.firstName,
-            lastName    : user.lastName,
-            email       : user.email,
-            mobileNumber: user.mobileNumber,
-            createdAt   : user.createdAt
-        };
     }
 
     /**
@@ -71,7 +77,10 @@ export class AuthService {
      * @returns {Promise<User|null>} The user found with the provided email, or null if not found.
      */
     async findUser(email: string): Promise<User|null> {
-        return this.prisma.user.findUnique({ where: { email } });
+        return this.prisma.user.findUnique({ 
+            where: { email },
+            include: { role: true }
+         });
     }
     
     /**
@@ -90,7 +99,8 @@ export class AuthService {
             if(isValid) {
                 const payload = {
                     sub: user.id,
-                    email: user.email
+                    email: user.email,
+                    role: user.role.name
                 }
 
                 const jwtToken = await this.jwt.signAsync(payload);

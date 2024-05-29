@@ -2,7 +2,6 @@ import { Body, ClassSerializerInterceptor, Controller, Get, Post, Query, UseInte
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import { User } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
 

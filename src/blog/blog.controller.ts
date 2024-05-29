@@ -7,6 +7,8 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from
 import { Blog } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PaginationDto } from './dto/pagination.dto';
+import { Roles } from 'src/decorators/roles.decorator';
+import { RoleGuard } from 'src/guards/role.guard';
 
 @ApiTags('Blogs')
 @ApiBearerAuth('access-token')
@@ -47,9 +49,10 @@ export class BlogController {
      */
     @ApiCreatedResponse({ description: 'The record has been successfully created.' })
     @ApiForbiddenResponse({ description: 'Forbidden resource.' })
-    @UseGuards(AuthGuard)
-    @Post()
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles('Admin', 'User')
     @UseInterceptors(FileInterceptor('image'))
+    @Post()
     async createBlog(@Body(new ValidationPipe()) createBlogDto: CreateBlogDto, @UploadedFile() image: Express.Multer.File|undefined): Promise<Blog> {
         return await this.blogService.createBlog(createBlogDto, image?.path);
     }
@@ -62,9 +65,11 @@ export class BlogController {
      * @param {Express.Multer.File} image
      * @returns {Promise<Blog|null>}
      */
-    @UseGuards(AuthGuard)
-    @Patch(':id')
+    // Todo: To be implemented with CASL for more control.
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles('Admin')
     @UseInterceptors(FileInterceptor('image'))
+    @Patch(':id')
     async updateBlog(@Param('id', ParseIntPipe) id: number, @Body(new ValidationPipe()) updateBlogDto: UpdateBlogDto, @UploadedFile() image: Express.Multer.File): Promise<Blog|null> {
         return await this.blogService.updateBlog(id, updateBlogDto, image?.path);
     }  
@@ -75,7 +80,9 @@ export class BlogController {
      * @param {number} id
      * @returns {Promise<Blog|null>}
      */
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles('Admin')
+    // Todo: To be implemented with CASL for more control.
     @Delete(':id')
     async deleteBlog(@Param('id', ParseIntPipe) id: number): Promise<Blog|null> {
         return await this.blogService.deleteBlog(id);

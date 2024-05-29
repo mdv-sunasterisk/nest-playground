@@ -8,6 +8,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { RoleGuard } from 'src/guards/role.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Module({
   imports: [
@@ -45,6 +47,6 @@ import { v4 as uuidv4 } from 'uuid';
     })
   ],
   controllers: [BlogController],
-  providers: [BlogService, PrismaService]
+  providers: [BlogService, PrismaService, AuthGuard, RoleGuard]
 })
 export class BlogModule {}

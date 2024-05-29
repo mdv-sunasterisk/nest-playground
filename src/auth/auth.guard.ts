@@ -18,12 +18,12 @@ export class AuthGuard implements CanActivate {
       try {
         const token = request.headers.authorization.split(' ')[1];
 
-        
         if(token) {
-          this.jwt.verify(token);
+          const user = this.jwt.verify(token);
+          request.user = user;
         }
       } catch (error) {
-        throw new UnauthorizedException('Unauthozed access.');
+        throw new UnauthorizedException('Unauthorized access.');
       }
     }
 
